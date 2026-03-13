@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkyPulse — Weather Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts: Outfit (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- ===== LOADING OVERLAY ===== -->
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="loader-ring"></div>
+    <p class="loader-text">Fetching weather…</p>
+  </div>
+
+  <!-- ===== BACKGROUND LAYER (changes with weather) ===== -->
+  <div class="bg-layer" id="bgLayer"></div>
+  <div class="bg-particles" id="bgParticles"></div>
+
+  <!-- ===== MAIN WRAPPER ===== -->
+  <div class="app-wrapper">
+
+    <!-- ── TOP NAV ── -->
+    <header class="top-nav">
+      <div class="brand">
+        <span class="brand-icon">⛅</span>
+        <span class="brand-name">SkyPulse</span>
+      </div>
+      <div class="nav-controls">
+        <!-- Unit Toggle -->
+        <button class="unit-toggle" id="unitToggle" title="Toggle °C / °F">
+          <span class="unit-label" id="unitLabel">°C</span>
+        </button>
+        <!-- Dark / Light mode -->
+        <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
+          <span class="theme-icon" id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── SEARCH BAR ── -->
+    <section class="search-section">
+      <div class="search-wrap">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search city or place…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="search-btn" id="searchBtn">Search</button>
+        </div>
+        <!-- Geolocation button -->
+        <button class="geo-btn" id="geoBtn" title="Use my location">
+          <span>📍</span> My Location
+        </button>
+      </div>
+
+      <!-- Search History -->
+      <div class="history-row" id="historyRow"></div>
+    </section>
+
+    <!-- ── ERROR BANNER ── -->
+    <div class="error-banner" id="errorBanner" style="display:none;"></div>
+
+    <!-- ── MAIN CONTENT (hidden until data loads) ── -->
+    <main class="main-content" id="mainContent" style="display:none;">
+
+      <!-- === CURRENT WEATHER CARD === -->
+      <section class="current-card glass-card">
+        <!-- Left: City + Condition -->
+        <div class="current-left">
+          <div class="city-row">
+            <h1 class="city-name" id="cityName">—</h1>
+            <span class="country-badge" id="countryBadge">—</span>
+          </div>
+          <p class="date-time" id="dateTime">—</p>
+          <div class="condition-row">
+            <div class="weather-icon-wrap animated-icon" id="currentIconWrap">
+              <img src="" alt="weather icon" id="currentIcon" class="weather-icon-img"/>
+            </div>
+            <div>
+              <p class="condition-label" id="conditionLabel">—</p>
+              <p class="feels-like" id="feelsLike">Feels like —</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Big Temp + Stats -->
+        <div class="current-right">
+          <div class="temp-display">
+            <span class="temp-big" id="tempBig">—</span>
+            <span class="temp-unit-big" id="tempUnitBig">°C</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-icon">💧</span>
+              <span class="stat-label">Humidity</span>
+              <span class="stat-value" id="humidity">—</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">💨</span>
+              <span class="stat-label">Wind</span>
+              <span class="stat-value" id="windSpeed">—</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">🌡️</span>
+              <span class="stat-label">Pressure</span>
+              <span class="stat-value" id="pressure">—</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">👁️</span>
+              <span class="stat-label">Visibility</span>
+              <span class="stat-value" id="visibility">—</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- === EXTRA DETAILS ROW === -->
+      <section class="details-row">
+        <div class="detail-chip glass-card">
+          <span class="chip-icon">🌅</span>
+          <div>
+            <p class="chip-label">Sunrise</p>
+            <p class="chip-value" id="sunrise">—</p>
+          </div>
+        </div>
+        <div class="detail-chip glass-card">
+          <span class="chip-icon">🌇</span>
+          <div>
+            <p class="chip-label">Sunset</p>
+            <p class="chip-value" id="sunset">—</p>
+          </div>
+        </div>
+        <div class="detail-chip glass-card">
+          <span class="chip-icon">🌬️</span>
+          <div>
+            <p class="chip-label">Wind Dir.</p>
+            <p class="chip-value" id="windDir">—</p>
+          </div>
+        </div>
+        <div class="detail-chip glass-card">
+          <span class="chip-icon">☁️</span>
+          <div>
+            <p class="chip-label">Cloudiness</p>
+            <p class="chip-value" id="cloudiness">—</p>
+          </div>
+        </div>
+        <div class="detail-chip glass-card">
+          <span class="chip-icon">🌫️</span>
+          <div>
+            <p class="chip-label">Dew Point</p>
+            <p class="chip-value" id="dewPoint">—</p>
+          </div>
+        </div>
+        <div class="detail-chip glass-card">
+          <span class="chip-icon">🌡️</span>
+          <div>
+            <p class="chip-label">Min / Max</p>
+            <p class="chip-value" id="minMax">—</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- === 5-DAY FORECAST === -->
+      <section class="forecast-section">
+        <h2 class="section-title">5-Day Forecast</h2>
+        <div class="forecast-grid" id="forecastGrid">
+          <!-- Forecast cards injected by JS -->
+        </div>
+      </section>
+
+    </main><!-- /main-content -->
+
+    <footer class="app-footer">
+      Powered by <a href="https://openweathermap.org" target="_blank">OpenWeatherMap</a> · SkyPulse © 2026
+    </footer>
+
+  </div><!-- /app-wrapper -->
+
+  <script src="script.js"></script>
+</body>
+</html>
